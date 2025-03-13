@@ -1,0 +1,23 @@
+{
+  "profiles": {
+    "(No Parameters)": {
+      "commandName": "Project"
+    },
+    "list": {
+      "commandName": "Project",
+      "commandLineArgs": "list"
+    },
+    "read": {
+      "commandName": "Project",
+      "commandLineArgs": "read --from 0 -n 3"
+    },
+    "send": {
+      "commandName": "Project",
+      "commandLineArgs": "send --to foo 123"
+    },
+    "mirror": {
+      "commandName": "Project",
+      "commandLineArgs": "mirror --from foo --to bar"
+    }
+  }
+}
