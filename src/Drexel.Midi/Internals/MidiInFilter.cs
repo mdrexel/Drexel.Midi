@@ -6,20 +6,20 @@ namespace Drexel.Midi.Internals
     internal sealed class MidiInFilter : IDisposable
     {
         private readonly MidiIn _device;
-        private readonly int? _channel;
+        private readonly MidiChannels _channels;
         private readonly EventHandler<MidiInMessageEventArgs> _onMessage;
         private readonly EventHandler<MidiInSysexMessageEventArgs> _onSysex;
 
         public MidiInFilter(
             MidiIn device,
-            int? channel,
+            MidiChannels channels,
             EventHandler<MidiInMessageEventArgs> onMessage,
             EventHandler<MidiInSysexMessageEventArgs> onSysex)
         {
             _device = device;
-            _channel = channel;
+            _channels = channels;
 
-            if (channel is null)
+            if (_channels == MidiChannels.All)
             {
                 _onMessage = onMessage;
             }
@@ -28,7 +28,7 @@ namespace Drexel.Midi.Internals
                 _onMessage =
                     (obj, e) =>
                     {
-                        if (e.MidiEvent.Channel == channel.Value)
+                        if (_channels.Contains(e.MidiEvent.Channel))
                         {
                             onMessage.Invoke(obj, e);
                         }

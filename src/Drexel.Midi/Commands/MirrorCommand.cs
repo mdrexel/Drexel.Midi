@@ -2,6 +2,7 @@
 using System.CommandLine;
 using System.Threading;
 using Drexel.Midi.Internals;
+using NAudio.Midi;
 using Spectre.Console;
 
 namespace Drexel.Midi.Commands;
@@ -65,8 +66,10 @@ internal sealed class MirrorCommand : Command<MirrorCommand.Options, MirrorComma
                         console.WriteLine($"in:  {e.Timestamp}: {e.MidiEvent}");
                         foreach (MidiOutFilter @out in to)
                         {
-                            @out.Send(e.MidiEvent);
-                            console.WriteLine($"out: {e.Timestamp}: {e.MidiEvent}");
+                            foreach (MidiEvent sent in @out.Send(e.MidiEvent))
+                            {
+                                console.WriteLine($"out: {e.Timestamp}: {sent}");
+                            }
                         }
                     },
                 onSysex: (obj, e) => { });

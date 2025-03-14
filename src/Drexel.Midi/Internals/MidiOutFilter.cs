@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NAudio.Midi;
 
 namespace Drexel.Midi.Internals
@@ -6,12 +8,12 @@ namespace Drexel.Midi.Internals
     internal class MidiOutFilter : IDisposable
     {
         private readonly MidiOut _device;
-        private readonly int? _channel;
+        private readonly MidiChannels.Channel[] _channels;
 
-        public MidiOutFilter(MidiOut device, int? channel)
+        public MidiOutFilter(MidiOut device, MidiChannels channels)
         {
             _device = device;
-            _channel = channel;
+            _channels = channels.Where(x => x.Enabled).ToArray();
         }
 
         public void Dispose()
@@ -19,16 +21,21 @@ namespace Drexel.Midi.Internals
             _device.Dispose();
         }
 
-        public MidiEvent Send(MidiEvent message)
+        public IEnumerable<MidiEvent> Send(MidiEvent message)
         {
-            if (_channel is not null)
+            MidiEvent[] events = new MidiEvent[_channels.Length];
+            for (int counter = 0; counter < _channels.Length; counter++)
             {
-                message = message.Clone();
-                message.Channel = _channel.Value;
+                MidiChannels.Channel channel = _channels[counter];
+
+                MidiEvent clone = message.Clone();
+                clone.Channel = channel.Id;
+
+                events[counter] = clone;
+                _device.Send(clone.GetAsShortMessage());
             }
 
-            _device.Send(message.GetAsShortMessage());
-            return message;
+            return events;
         }
     }
 }

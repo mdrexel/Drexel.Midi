@@ -1,4 +1,5 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ public static class Program
     /// </returns>
     public static async Task<int> Main(string[] args)
     {
+
         RootCommand rootCommand =
             new("MIDI commands")
             {
